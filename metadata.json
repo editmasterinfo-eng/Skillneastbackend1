@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Secure Course API Backend",
+  "description": "Secure RESTful API backend using Node.js, Express, and Firebase Admin for a course platform with Telegram stream proxy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
