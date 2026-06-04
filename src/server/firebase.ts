@@ -10,13 +10,17 @@ try {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
     if (privateKey) {
-      // Remove wrapping quotes if they exist
+      // Try parsing as JSON if it was pasted with quotes
       if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-        privateKey = privateKey.slice(1, -1);
-      } else if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
-        privateKey = privateKey.slice(1, -1);
+        try {
+          privateKey = JSON.parse(privateKey);
+        } catch (e) {
+          privateKey = privateKey.slice(1, -1);
+        }
       }
+      // Replace literal \n with actual newlines if present
       privateKey = privateKey.replace(/\\n/g, '\n');
     }
 
