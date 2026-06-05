@@ -6,11 +6,14 @@ import {
   Server, 
   Lock, 
   Activity,
-  PlaySquare
+  PlaySquare,
+  Settings
 } from "lucide-react";
+import AdminPanel from "./components/AdminPanel";
 
 export default function App() {
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
+  const [showAdmin, setShowAdmin] = useState<boolean>(false);
 
   useEffect(() => {
     fetch("/api/health")
@@ -19,35 +22,55 @@ export default function App() {
       .catch((_) => setHealthStatus("Offline"));
   }, []);
 
+  if (showAdmin) {
+    return (
+      <div className="bg-neutral-950 p-6 min-h-screen">
+        <button onClick={() => setShowAdmin(false)} className="text-emerald-400 hover:text-emerald-300 font-medium mb-4 flex items-center gap-2">
+          &larr; Back to Platform
+        </button>
+        <AdminPanel />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-neutral-800">
       <main className="max-w-5xl mx-auto px-6 py-20">
         
         {/* Header Section */}
-        <header className="mb-16 border-b border-neutral-800 pb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-800 shadow-sm">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            </span>
-            <h1 className="text-2xl font-medium tracking-tight">Secure Course API System</h1>
+        <header className="mb-16 border-b border-neutral-800 pb-12 flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-800 shadow-sm">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              </span>
+              <h1 className="text-2xl font-medium tracking-tight">Secure Course API System</h1>
+            </div>
+            <p className="text-neutral-400 max-w-2xl text-lg leading-relaxed">
+              Enterprise-grade backend architecture established. Configured with strict CORS, rate-limiting, and Telegram Bot stream proxying to protect digital assets.
+            </p>
+            
+            <div className="mt-8 flex items-center gap-4 text-sm font-mono text-neutral-500">
+              <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
+                <Activity className="w-4 h-4" />
+                API Status: <span className={healthStatus === "Online" ? "text-emerald-400" : "text-amber-400"}>{healthStatus}</span>
+              </span>
+              <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
+                <Server className="w-4 h-4" />
+                Port: 3000
+              </span>
+            </div>
           </div>
-          <p className="text-neutral-400 max-w-2xl text-lg leading-relaxed">
-            Enterprise-grade backend architecture established. Configured with strict CORS, rate-limiting, and Telegram Bot stream proxying to protect digital assets.
-          </p>
-          
-          <div className="mt-8 flex items-center gap-4 text-sm font-mono text-neutral-500">
-            <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
-              <Activity className="w-4 h-4" />
-              API Status: <span className={healthStatus === "Online" ? "text-emerald-400" : "text-amber-400"}>{healthStatus}</span>
-            </span>
-            <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
-              <Server className="w-4 h-4" />
-              Port: 3000
-            </span>
-          </div>
+          <button 
+            onClick={() => setShowAdmin(true)}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <Settings className="w-4 h-4" /> Go to Admin Panel
+          </button>
         </header>
 
         {/* Core Architecture Matrix */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           <div className="p-6 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors">

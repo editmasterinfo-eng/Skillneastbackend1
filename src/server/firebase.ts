@@ -6,7 +6,7 @@ let rtdb: admin.database.Database;
 
 try {
   // Ensure the app isn't initialized multiple times in dev
-  if (!admin.apps.length) {
+  if (!admin.apps || admin.apps.length === 0) {
     // Attempt to load from env vars directly
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;

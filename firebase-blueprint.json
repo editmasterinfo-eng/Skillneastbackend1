@@ -1,0 +1,139 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents secondary attributes and metrics of a user registered in the system",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the user" },
+        "email": { "type": "string", "description": "Verified email address" },
+        "coins": { "type": "integer", "description": "Current active coin balance" },
+        "isPremium": { "type": "boolean", "description": "Premium accessibility privilege flag" },
+        "isBlocked": { "type": "boolean", "description": "Security block status" },
+        "isOnline": { "type": "boolean", "description": "Real-time connection status" },
+        "lastIp": { "type": "string", "description": "IP address of last connection session" },
+        "device": { "type": "string", "description": "User agent signature of connection" },
+        "country": { "type": "string", "description": "Country mapped via IpStack or reverse geo-lookup" },
+        "city": { "type": "string", "description": "City mapped via IpStack" },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "ISO timestamp of last request ping" }
+      },
+      "required": ["email", "coins", "isPremium", "isBlocked"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Represents course data including metadata and links",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the course" },
+        "description": { "type": "string", "description": "Short summary" },
+        "category": { "type": "string", "description": "Classification group" },
+        "imageUrl": { "type": "string", "description": "Poster banner image cover URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Database timestamp of creation" }
+      },
+      "required": ["title", "description"]
+    },
+    "License": {
+      "title": "License Key",
+      "description": "Alphanumeric activation license for upgrading access tier",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "description": "E.g. premium, ultimate" },
+        "status": { "type": "string", "description": "Fresh or used" },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "usedBy": { "type": "string", "description": "UID which redeemed this key" },
+        "usedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Event": {
+      "title": "Security Log & Event",
+      "description": "User behavior retention event logs",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "type": { "type": "string", "description": "Event category like login, streaming, keys" },
+        "event": { "type": "string", "description": "Human readable event log" },
+        "ip": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "SystemSetting": {
+      "title": "System Settings",
+      "description": "Overall web configurations",
+      "type": "object",
+      "properties": {
+        "storageLimit": { "type": "integer" },
+        "backupDomain": { "type": "string" },
+        "maintenanceMode": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ActivePopup": {
+      "title": "Welcome Announcements or Popups",
+      "description": "Popup configuration displayed on client",
+      "type": "object",
+      "properties": {
+        "message": { "type": "string" },
+        "active": { "type": "boolean" },
+        "type": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "FileAsset": {
+      "title": "File Storage Asset Metadata",
+      "description": "Metadata for files, videos, or resource assets used in streaming",
+      "type": "object",
+      "properties": {
+        "fileName": { "type": "string" },
+        "url": { "type": "string" },
+        "size": { "type": "integer" },
+        "fileType": { "type": "string" },
+        "uploadedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Notification": {
+      "title": "System Message & Notification Alerts",
+      "description": "System broadcast notification to users",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "target": { "type": "string", "description": "Broadcast targets (all, userId)" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Registered standard users database"
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/entities/Course" },
+      "description": "Available educational content assets catalog"
+    },
+    "/licenses/{licenseId}": {
+      "schema": { "$ref": "#/entities/License" },
+      "description": "Alphanumeric redeem keys database catalog"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "User behavior metric activity registry logs"
+    },
+    "/settings/system": {
+      "schema": { "$ref": "#/entities/SystemSetting" },
+      "description": "Web app configurations document"
+    },
+    "/settings/activePopup": {
+      "schema": { "$ref": "#/entities/ActivePopup" },
+      "description": "Welcome popups announcements settings"
+    },
+    "/files/{fileId}": {
+      "schema": { "$ref": "#/entities/FileAsset" },
+      "description": "Stored downloadable courses files/audios database"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "Broadcasted general notification logs"
+    }
+  }
+}
