@@ -8,6 +8,7 @@ import { globalLimiter } from './src/server/middlewares/rateLimit.middleware';
 import { adminRoutes } from './src/server/routes/admin.routes';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
+import { dataRoutes } from './src/server/routes/data.routes';
 
 async function startServer() {
   const app = express();
@@ -53,6 +54,7 @@ async function startServer() {
   app.use('/api/admin', adminRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
+  app.use('/api', dataRoutes);
 
   // 3. Vite Middleware (Fallback for SPA)
   if (process.env.NODE_ENV !== 'production') {
