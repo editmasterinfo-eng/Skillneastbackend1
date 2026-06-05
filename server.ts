@@ -5,7 +5,7 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 
 import { globalLimiter } from './src/server/middlewares/rateLimit.middleware';
-import { adminRoutes } from './src/server/routes/admin.routes';
+import adminRouterModular from './server/api';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
@@ -51,7 +51,7 @@ async function startServer() {
   });
 
   // Mapped routers
-  app.use('/api/admin', adminRoutes);
+  app.use('/api/admin', adminRouterModular);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
   app.use('/api', dataRoutes);

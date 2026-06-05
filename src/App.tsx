@@ -6,14 +6,11 @@ import {
   Server, 
   Lock, 
   Activity,
-  PlaySquare,
-  Settings
+  PlaySquare
 } from "lucide-react";
-import AdminPanel from "./components/AdminPanel";
 
 export default function App() {
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
-  const [showAdmin, setShowAdmin] = useState<boolean>(false);
 
   useEffect(() => {
     fetch("/api/health")
@@ -22,23 +19,12 @@ export default function App() {
       .catch((_) => setHealthStatus("Offline"));
   }, []);
 
-  if (showAdmin) {
-    return (
-      <div className="bg-neutral-950 p-6 min-h-screen">
-        <button onClick={() => setShowAdmin(false)} className="text-emerald-400 hover:text-emerald-300 font-medium mb-4 flex items-center gap-2">
-          &larr; Back to Platform
-        </button>
-        <AdminPanel />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-neutral-800">
       <main className="max-w-5xl mx-auto px-6 py-20">
         
         {/* Header Section */}
-        <header className="mb-16 border-b border-neutral-800 pb-12 flex justify-between items-start">
+        <header className="mb-16 border-b border-neutral-800 pb-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
               <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-800 shadow-sm">
@@ -61,12 +47,6 @@ export default function App() {
               </span>
             </div>
           </div>
-          <button 
-            onClick={() => setShowAdmin(true)}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            <Settings className="w-4 h-4" /> Go to Admin Panel
-          </button>
         </header>
 
         {/* Core Architecture Matrix */}
