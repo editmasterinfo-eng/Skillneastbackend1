@@ -10,7 +10,12 @@ import {
   Lock,
   ExternalLink,
   Cpu,
-  Users
+  Users,
+  ShieldAlert,
+  Network,
+  Ban,
+  Zap,
+  Fingerprint
 } from "lucide-react";
 import {
   LineChart,
@@ -226,87 +231,83 @@ export default function App() {
 
         </div>
 
-        {/* API Endpoint Reference Table */}
-        <div className="mt-8">
-          <h3 className="text-lg font-medium mb-4 flex items-center gap-2 text-white">
-            <TerminalSquare className="w-5 h-5 text-indigo-400" />
-            Mounted RESTful Endpoints
-          </h3>
-          <p className="text-sm text-neutral-500 mb-6 max-w-2xl">
-            Only the registered React frontend application can invoke these endpoints. Any external Curl/Postman hits are rejected at the firewall gateway level by pre-flight CORS protocols.
-          </p>
-          
-          <div className="border border-neutral-800 rounded-xl overflow-hidden bg-[#111111]">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-[#0a0a0a] border-b border-neutral-800 font-medium text-neutral-400 text-xs uppercase tracking-wider font-mono">
-                  <tr>
-                    <th className="px-6 py-4">Protocol</th>
-                    <th className="px-6 py-4 w-full">Endpoint Path URI</th>
-                    <th className="px-6 py-4">Security Policy / Middleware</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-800/50 text-neutral-300 font-mono text-xs">
-                  <tr className="hover:bg-neutral-900 transition-colors">
-                    <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded font-bold">GET</span></td>
-                    <td className="px-6 py-4 text-neutral-200">/api/health</td>
-                    <td className="px-6 py-4"><span className="text-neutral-500">Global RateLimit</span></td>
-                  </tr>
-                  <tr className="hover:bg-neutral-900 transition-colors">
-                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
-                    <td className="px-6 py-4 text-neutral-200">/api/admin/keys/generate</td>
-                    <td className="px-6 py-4"><span className="text-rose-400 bg-rose-400/10 border border-rose-400/20 px-2 py-1 rounded">requireAdmin</span></td>
-                  </tr>
-                  <tr className="hover:bg-neutral-900 transition-colors">
-                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
-                    <td className="px-6 py-4 text-neutral-200">/api/user/activate-key</td>
-                    <td className="px-6 py-4"><span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span></td>
-                  </tr>
-                  <tr className="hover:bg-neutral-900 transition-colors">
-                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
-                    <td className="px-6 py-4 text-neutral-200">/api/stream/request/:videoId</td>
-                    <td className="px-6 py-4 flex items-center gap-2">
-                      <span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span>
-                      <span className="text-fuchsia-400 bg-fuchsia-400/10 border border-fuchsia-400/20 px-2 py-1 rounded">monitorDevice</span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-neutral-900 transition-colors">
-                    <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded font-bold">GET</span></td>
-                    <td className="px-6 py-4 text-neutral-200">/api/stream/proxy/:proxyId</td>
-                    <td className="px-6 py-4"><span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
 
-        {/* Security & Compliance Notice Block */}
-        <div className="mt-12 bg-red-950/20 border border-red-900/50 rounded-xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="mt-1 p-2 bg-red-500/10 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-red-500" />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-red-400 mb-2">Security & Compliance Notice</h3>
-              <p className="text-sm text-neutral-400 leading-relaxed max-w-4xl mb-4">
-                This API infrastructure is specifically built for internal application use. We enforce a strictly regulated CORS origin policy locked entirely to <code className="bg-black/50 px-1.5 py-0.5 rounded text-neutral-300 font-mono text-xs">https://skillneast.vercel.app/</code>.
+
+        {/* Security Architecture & Compliance Notice Block */}
+        <div className="mt-12 space-y-6">
+          <div className="flex items-center gap-3 border-b border-red-900/30 pb-4">
+            <ShieldAlert className="w-6 h-6 text-red-500" />
+            <h2 className="text-xl font-semibold text-white tracking-tight">Zero-Trust Security & Compliance Protocols</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* CORS Policy */}
+            <div className="bg-[#111111] border border-red-900/40 rounded-xl p-6 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Network className="w-24 h-24 text-red-500" />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <Network className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-base font-medium text-red-200">Strict CORS Firewall gateway</h3>
+              </div>
+              <p className="text-sm text-neutral-400 leading-relaxed z-10 relative mb-4">
+                This API infrastructure is specifically built for internal application use. We enforce a strictly regulated CORS origin policy locked entirely to the authorized frontend domain.
               </p>
-              
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3 text-sm text-neutral-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
-                  <p><strong className="text-red-300">Misuse & Scraping Prohibited:</strong> Direct API hits via terminal, scripts, unauthorized mobile applications, or third-party web clients are automatically blocked. Aggressive scraping or fuzzing will result in immediate IP blacklisting across the firewall.</p>
-                </li>
-                <li className="flex items-start gap-3 text-sm text-neutral-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
-                  <p><strong className="text-red-300">Rate Limiting Enforced:</strong> Global rate limiters are active on all endpoints. Bursty traffic triggering DDoS protection protocols will drop packets silently without standard HTTP error responses.</p>
-                </li>
-                <li className="flex items-start gap-3 text-sm text-neutral-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
-                  <p><strong className="text-red-300">Session Proxies:</strong> All media streams utilize securely signed, expiring, one-time proxy URIs tied strictly to the requesting device footprint to prevent piracy and direct stream dumping.</p>
-                </li>
-              </ul>
+              <div className="bg-black/50 border border-neutral-800 p-3 rounded-lg flex items-center justify-between z-10 relative">
+                <span className="text-xs text-neutral-500 font-mono">AUTHORIZED_ORIGIN</span>
+                <code className="text-xs text-red-300 font-mono bg-red-950/30 px-2 py-1 rounded">https://skillneast.vercel.app/</code>
+              </div>
+            </div>
+
+            {/* Anti-Scraping */}
+            <div className="bg-[#111111] border border-red-900/40 rounded-xl p-6 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Ban className="w-24 h-24 text-red-500" />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <Ban className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-base font-medium text-red-200">Zero-Tolerance Anti-Scraping</h3>
+              </div>
+              <p className="text-sm text-neutral-400 leading-relaxed z-10 relative">
+                Direct API hits via terminal (cURL), automated scripts (Python/Puppeteer), unauthorized mobile applications, or third-party web clients (Postman/Insomnia) are automatically blocked. Aggressive scraping or endpoint fuzzing will trigger our automated WAF, resulting in an immediate, permanent IP and ASN subnet ban at the network edge.
+              </p>
+            </div>
+
+            {/* Rate Limiting */}
+            <div className="bg-[#111111] border border-red-900/40 rounded-xl p-6 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Zap className="w-24 h-24 text-red-500" />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <Zap className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-base font-medium text-red-200">Layer 7 DDoS & Rate Limiting</h3>
+              </div>
+              <p className="text-sm text-neutral-400 leading-relaxed z-10 relative">
+                Global token-bucket rate limiters are active on all RESTful endpoints. Bursty traffic triggering DDoS protection protocols will instruct the proxy layer to drop packets silently without returning standard HTTP error payloads, starving automated attack vectors of system feedback.
+              </p>
+            </div>
+
+            {/* Sub-resource Integrity & Proxies */}
+            <div className="bg-[#111111] border border-red-900/40 rounded-xl p-6 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Fingerprint className="w-24 h-24 text-red-500" />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <Fingerprint className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-base font-medium text-red-200">Device Fingerprinting & Video DRM</h3>
+              </div>
+              <p className="text-sm text-neutral-400 leading-relaxed z-10 relative">
+                All premium media streams utilize securely signed, expiring, one-time proxy URIs tied strictly to the requesting browser's cryptographic fingerprint. Concurrent session detection actively terminates hijacked streams to prevent digital piracy and direct <code className="text-xs bg-black/40 px-1 rounded">.m3u8</code> / <code className="text-xs bg-black/40 px-1 rounded">.mp4</code> stream dumping.
+              </p>
             </div>
           </div>
         </div>
