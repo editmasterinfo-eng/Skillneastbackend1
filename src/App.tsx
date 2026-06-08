@@ -78,18 +78,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-neutral-800 pb-20">
-      
-      {/* SECURITY / WARNING BANNER */}
-      <div className="bg-red-950/30 border-b border-red-900/50 text-red-200 px-6 py-3 flex items-start gap-3 text-sm">
-        <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-500 mt-0.5" />
-        <div>
-          <strong className="font-semibold text-red-400">WARNING: UNAUTHORIZED ACCESS & MISUSE PROHIBITED.</strong>
-          <p className="mt-1 leading-relaxed opacity-90 max-w-4xl">
-            This API operates under a strict CORS policy and is locked exclusively to <code className="bg-black/40 px-1.5 py-0.5 rounded text-red-300 font-mono">https://skillneast.vercel.app/</code>. 
-            Direct API hits, scraping attempts, or unauthorized clients will instantly trigger rate-limit blocks and connection drops. All traffic is monitored.
-          </p>
-        </div>
-      </div>
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         
@@ -289,6 +277,36 @@ export default function App() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Security & Compliance Notice Block */}
+        <div className="mt-12 bg-red-950/20 border border-red-900/50 rounded-xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="mt-1 p-2 bg-red-500/10 rounded-lg">
+              <AlertTriangle className="w-6 h-6 text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-red-400 mb-2">Security & Compliance Notice</h3>
+              <p className="text-sm text-neutral-400 leading-relaxed max-w-4xl mb-4">
+                This API infrastructure is specifically built for internal application use. We enforce a strictly regulated CORS origin policy locked entirely to <code className="bg-black/50 px-1.5 py-0.5 rounded text-neutral-300 font-mono text-xs">https://skillneast.vercel.app/</code>.
+              </p>
+              
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-sm text-neutral-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                  <p><strong className="text-red-300">Misuse & Scraping Prohibited:</strong> Direct API hits via terminal, scripts, unauthorized mobile applications, or third-party web clients are automatically blocked. Aggressive scraping or fuzzing will result in immediate IP blacklisting across the firewall.</p>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-neutral-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                  <p><strong className="text-red-300">Rate Limiting Enforced:</strong> Global rate limiters are active on all endpoints. Bursty traffic triggering DDoS protection protocols will drop packets silently without standard HTTP error responses.</p>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-neutral-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                  <p><strong className="text-red-300">Session Proxies:</strong> All media streams utilize securely signed, expiring, one-time proxy URIs tied strictly to the requesting device footprint to prevent piracy and direct stream dumping.</p>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
