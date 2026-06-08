@@ -30,8 +30,12 @@ async function startServer() {
 
   app.use(cors({
     origin: (origin, callback) => {
-      // Allow all origins for the external admin panel
-      callback(null, true);
+      // ONLY ALLOW skillneast.vercel.app, local dev, and AI Studio
+      if (!origin || allowedOrigins.includes(origin) || origin === 'https://skillneast.vercel.app' || origin.includes('run.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Blocked by Strict CORS Policy: Unauthorized origin'));
+      }
     },
     credentials: true,
   }));

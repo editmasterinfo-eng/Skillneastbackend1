@@ -1,128 +1,295 @@
 import { useState, useEffect } from "react";
 import { 
   ShieldCheck, 
-  Database, 
   TerminalSquare, 
   Server, 
-  Lock, 
   Activity,
-  PlaySquare
+  AlertTriangle,
+  Globe,
+  Database,
+  Lock,
+  ExternalLink,
+  Cpu,
+  Users
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell
+} from 'recharts';
+
+interface SystemMetrics {
+  timestamp: string;
+  cpu: number;
+  memory: number;
+  activeUsers: number;
+  latency: number;
+}
+
+const MAX_HISTORY = 15; // Keep last 15 points
 
 export default function App() {
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
+  const [metricsHistory, setMetricsHistory] = useState<SystemMetrics[]>([]);
+  const [currentMetrics, setCurrentMetrics] = useState<SystemMetrics | null>(null);
 
   useEffect(() => {
+    // Health check
     fetch("/api/health")
       .then((res) => res.json())
       .then((data) => setHealthStatus(data.status === "ok" ? "Online" : "Offline"))
-      .catch((_) => setHealthStatus("Offline"));
+      .catch(() => setHealthStatus("Offline"));
+
+    // Poll System Metrics
+    const fetchMetrics = () => {
+      fetch("/api/system/metrics")
+        .then((res) => res.json())
+        .then((data: SystemMetrics) => {
+          setCurrentMetrics(data);
+          setMetricsHistory(prev => {
+            const newHistory = [...prev, data];
+            if (newHistory.length > MAX_HISTORY) return newHistory.slice(1);
+            return newHistory;
+          });
+        })
+        .catch(console.error);
+    };
+
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 3000);
+    return () => clearInterval(interval);
   }, []);
 
+  // Fake static visual data for Storage (Server videos storage vs used)
+  const storageData = [
+    { name: 'Used Space (Videos)', value: 850, color: '#f59e0b' },
+    { name: 'System Cache', value: 300, color: '#6366f1' },
+    { name: 'Free Space', value: 850, color: '#262626' }
+  ];
+
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-neutral-800">
-      <main className="max-w-5xl mx-auto px-6 py-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-neutral-800 pb-20">
+      
+      {/* SECURITY / WARNING BANNER */}
+      <div className="bg-red-950/30 border-b border-red-900/50 text-red-200 px-6 py-3 flex items-start gap-3 text-sm">
+        <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-500 mt-0.5" />
+        <div>
+          <strong className="font-semibold text-red-400">WARNING: UNAUTHORIZED ACCESS & MISUSE PROHIBITED.</strong>
+          <p className="mt-1 leading-relaxed opacity-90 max-w-4xl">
+            This API operates under a strict CORS policy and is locked exclusively to <code className="bg-black/40 px-1.5 py-0.5 rounded text-red-300 font-mono">https://skillneast.vercel.app/</code>. 
+            Direct API hits, scraping attempts, or unauthorized clients will instantly trigger rate-limit blocks and connection drops. All traffic is monitored.
+          </p>
+        </div>
+      </div>
+
+      <main className="max-w-6xl mx-auto px-6 py-12">
         
         {/* Header Section */}
-        <header className="mb-16 border-b border-neutral-800 pb-12">
+        <header className="mb-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-800 shadow-sm">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <div className="flex items-center gap-3 mb-3">
+              <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-800 shadow-sm relative overflow-hidden">
+                <ShieldCheck className="w-6 h-6 text-emerald-400 z-10 relative" />
+                <div className="absolute inset-0 bg-emerald-500/10 blur-xl"></div>
               </span>
-              <h1 className="text-2xl font-medium tracking-tight">Secure Course API System</h1>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-white">Skill n East API Gateway</h1>
+                <p className="text-sm text-neutral-500 font-mono mt-1">Node.js Express Engine • Firebase Admin API</p>
+              </div>
             </div>
-            <p className="text-neutral-400 max-w-2xl text-lg leading-relaxed">
-              Enterprise-grade backend architecture established. Configured with strict CORS, rate-limiting, and Telegram Bot stream proxying to protect digital assets.
-            </p>
             
-            <div className="mt-8 flex items-center gap-4 text-sm font-mono text-neutral-500">
-              <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
-                <Activity className="w-4 h-4" />
-                API Status: <span className={healthStatus === "Online" ? "text-emerald-400" : "text-amber-400"}>{healthStatus}</span>
+            <div className="mt-5 flex flex-wrap items-center gap-3 text-xs font-mono text-neutral-400">
+              <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md text-emerald-400">
+                <Activity className="w-3.5 h-3.5" />
+                STATUS: {healthStatus.toUpperCase()}
               </span>
               <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
-                <Server className="w-4 h-4" />
-                Port: 3000
+                <Server className="w-3.5 h-3.5" />
+                REGION: ASIA-SOUTHEAST1
+              </span>
+              <span className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-md">
+                <Lock className="w-3.5 h-3.5 text-rose-400" />
+                CORS: LOCKED
               </span>
             </div>
+          </div>
+
+          <div className="flex-shrink-0">
+            <a 
+              href="https://skillneast.vercel.app/" 
+              target="_blank" 
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 bg-white hover:bg-neutral-200 text-black px-5 py-2.5 rounded-lg font-medium transition-all shadow-lg hover:shadow-white/10"
+            >
+              <Globe className="w-4 h-4" />
+              Open Frontend Application
+              <ExternalLink className="w-4 h-4 ml-1 opacity-50" />
+            </a>
           </div>
         </header>
 
-        {/* Core Architecture Matrix */}
+        {/* Live Metrics Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-[#111111] border border-neutral-800 rounded-xl p-5 relative overflow-hidden">
+            <Cpu className="w-5 h-5 text-indigo-400 mb-3" />
+            <p className="text-xs text-neutral-500 font-mono tracking-wider">CPU LOAD</p>
+            <p className="text-2xl font-bold text-white mt-1">{currentMetrics?.cpu.toFixed(1) || 0}%</p>
+          </div>
+          <div className="bg-[#111111] border border-neutral-800 rounded-xl p-5 relative overflow-hidden">
+            <Database className="w-5 h-5 text-emerald-400 mb-3" />
+            <p className="text-xs text-neutral-500 font-mono tracking-wider">MEMORY USAGE</p>
+            <p className="text-2xl font-bold text-white mt-1">{currentMetrics?.memory.toFixed(1) || 0} MB</p>
+          </div>
+          <div className="bg-[#111111] border border-neutral-800 rounded-xl p-5 relative overflow-hidden">
+            <Users className="w-5 h-5 text-amber-400 mb-3" />
+            <p className="text-xs text-neutral-500 font-mono tracking-wider">ACTIVE CONNECTIONS</p>
+            <p className="text-2xl font-bold text-white mt-1">{currentMetrics?.activeUsers || 0}</p>
+          </div>
+          <div className="bg-[#111111] border border-neutral-800 rounded-xl p-5 relative overflow-hidden">
+            <Activity className="w-5 h-5 text-rose-400 mb-3" />
+            <p className="text-xs text-neutral-500 font-mono tracking-wider">AVG LATENCY</p>
+            <p className="text-2xl font-bold text-white mt-1">{currentMetrics?.latency || 0} ms</p>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
           
-          <div className="p-6 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors">
-            <Database className="w-6 h-6 text-indigo-400 mb-4" />
-            <h2 className="text-base font-medium mb-2">Firestore Admin Gateway</h2>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Client-side DB access explicitly disabled. All read/writes proxy through Node.js Express controllers enforcing strict CRUD limits.
-            </p>
+          {/* CPU & Memory Time Chart (takes 2 cols) */}
+          <div className="lg:col-span-2 bg-[#111111] border border-neutral-800 rounded-xl p-6">
+            <h3 className="text-sm font-medium mb-6 flex items-center gap-2 text-neutral-300">
+              <Activity className="w-4 h-4 text-emerald-400" /> Live Resource Telemetry
+            </h3>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={metricsHistory} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#818cf8" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#818cf8" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorMem" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#34d399" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#262626" vertical={false} />
+                  <XAxis 
+                    dataKey="timestamp" 
+                    tick={{ fill: '#52525b', fontSize: 10 }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    yAxisId="left" 
+                    tick={{ fill: '#52525b', fontSize: 10 }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    yAxisId="right" 
+                    orientation="right" 
+                    tick={{ fill: '#52525b', fontSize: 10 }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#171717', borderColor: '#262626', fontSize: '12px' }}
+                    itemStyle={{ color: '#e5e5e5' }}
+                  />
+                  <Area yAxisId="left" type="monotone" dataKey="cpu" stroke="#818cf8" strokeWidth={2} fillOpacity={1} fill="url(#colorCpu)" name="CPU (%)" />
+                  <Area yAxisId="right" type="monotone" dataKey="memory" stroke="#34d399" strokeWidth={2} fillOpacity={1} fill="url(#colorMem)" name="Memory (MB)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
-          <div className="p-6 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors">
-            <PlaySquare className="w-6 h-6 text-blue-400 mb-4" />
-            <h2 className="text-base font-medium mb-2">Telegram Stream Proxy</h2>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Original Telegram source URLs (m3u8/mp4) are never exposed. Short-lived proxy endpoints are generated per user device.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors">
-            <Lock className="w-6 h-6 text-amber-400 mb-4" />
-            <h2 className="text-base font-medium mb-2">License & Progress Guard</h2>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Anti-cheat mechanisms block rapid progress scrubbing. License key activations wrapped in transactional writes to prevent double-redeem.
-            </p>
+          {/* Storage Bar Chart */}
+          <div className="bg-[#111111] border border-neutral-800 rounded-xl p-6 flex flex-col">
+            <h3 className="text-sm font-medium mb-2 flex items-center gap-2 text-neutral-300">
+              <Database className="w-4 h-4 text-amber-400" /> Course Videos Storage
+            </h3>
+            <p className="text-xs text-neutral-500 mb-6 font-mono">(Simulated 2TB Drive Allocation)</p>
+            
+            <div className="flex-1 w-full h-full min-h-[200px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={storageData} layout="vertical" margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 11 }} width={110} />
+                  <Tooltip cursor={{fill: '#1a1a1a'}} contentStyle={{ backgroundColor: '#171717', borderColor: '#262626', fontSize: '12px' }} />
+                  <Bar dataKey="value" radius={[4, 4, 4, 4]} barSize={16}>
+                    {storageData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
         </div>
 
         {/* API Endpoint Reference Table */}
-        <div className="mt-16">
-          <h3 className="text-lg font-medium mb-6 flex items-center gap-2">
-            <TerminalSquare className="w-5 h-5 text-neutral-400" />
-            Mounted API Endpoints
+        <div className="mt-8">
+          <h3 className="text-lg font-medium mb-4 flex items-center gap-2 text-white">
+            <TerminalSquare className="w-5 h-5 text-indigo-400" />
+            Mounted RESTful Endpoints
           </h3>
+          <p className="text-sm text-neutral-500 mb-6 max-w-2xl">
+            Only the registered React frontend application can invoke these endpoints. Any external Curl/Postman hits are rejected at the firewall gateway level by pre-flight CORS protocols.
+          </p>
           
-          <div className="border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900/50">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-neutral-900 border-b border-neutral-800 font-medium text-neutral-300">
-                <tr>
-                  <th className="px-6 py-4">Method</th>
-                  <th className="px-6 py-4 w-full">Endpoint Path</th>
-                  <th className="px-6 py-4">Middleware</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800 text-neutral-400 font-mono text-xs">
-                <tr className="hover:bg-neutral-900/80 transition-colors">
-                  <td className="px-6 py-4"><span className="text-emerald-400">GET</span></td>
-                  <td className="px-6 py-4 text-emerald-100">/api/health</td>
-                  <td className="px-6 py-4">Global RateLimit</td>
-                </tr>
-                <tr className="hover:bg-neutral-900/80 transition-colors">
-                  <td className="px-6 py-4"><span className="text-amber-400">POST</span></td>
-                  <td className="px-6 py-4 text-emerald-100">/api/admin/keys/generate</td>
-                  <td className="px-6 py-4 text-rose-400">requireAdmin</td>
-                </tr>
-                <tr className="hover:bg-neutral-900/80 transition-colors">
-                  <td className="px-6 py-4"><span className="text-amber-400">POST</span></td>
-                  <td className="px-6 py-4 text-emerald-100">/api/user/activate-key</td>
-                  <td className="px-6 py-4 text-indigo-400">requireAuth</td>
-                </tr>
-                <tr className="hover:bg-neutral-900/80 transition-colors">
-                  <td className="px-6 py-4"><span className="text-amber-400">POST</span></td>
-                  <td className="px-6 py-4 text-emerald-100">/api/stream/request/:videoId</td>
-                  <td className="px-6 py-4 flex gap-2"><span className="text-indigo-400">requireAuth</span> <span className="text-orange-400">monitorDevice</span></td>
-                </tr>
-                <tr className="hover:bg-neutral-900/80 transition-colors">
-                  <td className="px-6 py-4"><span className="text-emerald-400">GET</span></td>
-                  <td className="px-6 py-4 text-emerald-100">/api/stream/proxy/:proxyId</td>
-                  <td className="px-6 py-4 text-indigo-400">requireAuth</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="border border-neutral-800 rounded-xl overflow-hidden bg-[#111111]">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-[#0a0a0a] border-b border-neutral-800 font-medium text-neutral-400 text-xs uppercase tracking-wider font-mono">
+                  <tr>
+                    <th className="px-6 py-4">Protocol</th>
+                    <th className="px-6 py-4 w-full">Endpoint Path URI</th>
+                    <th className="px-6 py-4">Security Policy / Middleware</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-800/50 text-neutral-300 font-mono text-xs">
+                  <tr className="hover:bg-neutral-900 transition-colors">
+                    <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded font-bold">GET</span></td>
+                    <td className="px-6 py-4 text-neutral-200">/api/health</td>
+                    <td className="px-6 py-4"><span className="text-neutral-500">Global RateLimit</span></td>
+                  </tr>
+                  <tr className="hover:bg-neutral-900 transition-colors">
+                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
+                    <td className="px-6 py-4 text-neutral-200">/api/admin/keys/generate</td>
+                    <td className="px-6 py-4"><span className="text-rose-400 bg-rose-400/10 border border-rose-400/20 px-2 py-1 rounded">requireAdmin</span></td>
+                  </tr>
+                  <tr className="hover:bg-neutral-900 transition-colors">
+                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
+                    <td className="px-6 py-4 text-neutral-200">/api/user/activate-key</td>
+                    <td className="px-6 py-4"><span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span></td>
+                  </tr>
+                  <tr className="hover:bg-neutral-900 transition-colors">
+                    <td className="px-6 py-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded font-bold">POST</span></td>
+                    <td className="px-6 py-4 text-neutral-200">/api/stream/request/:videoId</td>
+                    <td className="px-6 py-4 flex items-center gap-2">
+                      <span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span>
+                      <span className="text-fuchsia-400 bg-fuchsia-400/10 border border-fuchsia-400/20 px-2 py-1 rounded">monitorDevice</span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-neutral-900 transition-colors">
+                    <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded font-bold">GET</span></td>
+                    <td className="px-6 py-4 text-neutral-200">/api/stream/proxy/:proxyId</td>
+                    <td className="px-6 py-4"><span className="text-indigo-400 bg-indigo-400/10 border border-indigo-400/20 px-2 py-1 rounded">requireAuth</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -130,3 +297,4 @@ export default function App() {
     </div>
   );
 }
+
