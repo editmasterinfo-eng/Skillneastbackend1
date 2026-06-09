@@ -6,7 +6,16 @@ const router = Router();
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const doc = await db.collection('settings').doc('system').get();
-    res.json(doc.exists ? doc.data() : { storageLimit: 250, backupDomain: '', maintenanceMode: false });
+    res.json(doc.exists ? doc.data() : { 
+      storageLimit: 250, 
+      backupDomain: '', 
+      maintenanceMode: false,
+      onboardingPayload: {},
+      vaultPlans: [],
+      premiumNexus: {},
+      premiumPropaganda: {},
+      premiumTiers: []
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch system configurations' });
   }
@@ -14,13 +23,29 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
 
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { storageLimit, backupDomain, maintenanceMode } = req.body;
+    const { 
+      storageLimit, 
+      backupDomain, 
+      maintenanceMode, 
+      onboardingPayload, 
+      vaultPlans, 
+      premiumNexus, 
+      premiumPropaganda, 
+      premiumTiers 
+    } = req.body;
+    
     await db.collection('settings').doc('system').set({ 
       storageLimit: Number(storageLimit) || 100, 
       backupDomain: backupDomain || '', 
-      maintenanceMode: Boolean(maintenanceMode), 
+      maintenanceMode: Boolean(maintenanceMode),
+      ...(onboardingPayload && { onboardingPayload }),
+      ...(vaultPlans && { vaultPlans }),
+      ...(premiumNexus && { premiumNexus }),
+      ...(premiumPropaganda && { premiumPropaganda }),
+      ...(premiumTiers && { premiumTiers }),
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
+    
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update system configurations' });
