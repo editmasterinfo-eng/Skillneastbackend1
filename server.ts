@@ -7,6 +7,8 @@ import { createServer as createViteServer } from 'vite';
 import { globalLimiter } from './src/server/middlewares/rateLimit.middleware';
 import adminRouterModular from './server/api';
 import systemAnalyticsRoutes from './server/routes/systemAnalytics';
+import streamMonitorRoutes from './server/routes/streamMonitor';
+import imamGadzhiRoutes from './server/routes/imamGadzhi';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
@@ -88,6 +90,8 @@ async function startServer() {
   // Mapped routers
   app.use('/api/admin', adminRouterModular);
   app.use('/api/system-analytics', systemAnalyticsRoutes);
+  app.use('/api/stream-monitor', streamMonitorRoutes);
+  app.use('/api/imam-gadzhi', imamGadzhiRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
   app.use('/api', dataRoutes);

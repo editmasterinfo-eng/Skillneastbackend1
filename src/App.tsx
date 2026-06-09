@@ -124,7 +124,7 @@ export default function App() {
               className="inline-flex items-center gap-2 bg-white hover:bg-neutral-200 text-black px-5 py-2.5 rounded-lg font-medium transition-all shadow-lg hover:shadow-white/10"
             >
               <Globe className="w-4 h-4" />
-              Open Frontend Application
+              Open Authorized Access Portal
               <ExternalLink className="w-4 h-4 ml-1 opacity-50" />
             </a>
           </div>
@@ -254,10 +254,10 @@ export default function App() {
                 <h3 className="text-base font-medium text-red-200">Strict CORS Firewall gateway</h3>
               </div>
               <p className="text-sm text-neutral-400 leading-relaxed z-10 relative mb-4">
-                This API infrastructure is specifically built for internal application use. We enforce a strictly regulated CORS origin policy locked entirely to the authorized frontend domain.
+                This API infrastructure is specifically built for internal application use. We enforce a strictly regulated CORS origin policy locked entirely to the authorized access portal.
               </p>
               <div className="bg-black/50 border border-neutral-800 p-3 rounded-lg flex items-center justify-between z-10 relative">
-                <span className="text-xs text-neutral-500 font-mono">AUTHORIZED_ORIGIN</span>
+                <span className="text-xs text-neutral-500 font-mono">AUTHORIZED_PORTAL</span>
                 <code className="text-xs text-red-300 font-mono bg-red-950/30 px-2 py-1 rounded">https://skillneast.vercel.app/</code>
               </div>
             </div>
