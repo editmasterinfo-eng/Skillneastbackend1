@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DonateUI from "./components/DonateUI";
 import { 
   ShieldCheck, 
   TerminalSquare, 
@@ -43,6 +44,7 @@ interface SystemMetrics {
 const MAX_HISTORY = 15; // Keep last 15 points
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'donate'>('dashboard');
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
   const [metricsHistory, setMetricsHistory] = useState<SystemMetrics[]>([]);
   const [currentMetrics, setCurrentMetrics] = useState<SystemMetrics | null>(null);
@@ -82,9 +84,33 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-neutral-800 pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-neutral-800">
+      
+      {/* Top Application Navigation */}
+      <div className="bg-[#0a0a0a] border-b border-neutral-900 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-6 h-full">
+            <button 
+              onClick={() => setActiveTab('dashboard')} 
+              className={`h-full text-sm font-medium border-b-2 transition-colors flex items-center ${activeTab === 'dashboard' ? 'border-emerald-500 text-white' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+            >
+              API Gateway
+            </button>
+            <button 
+              onClick={() => setActiveTab('donate')} 
+              className={`h-full text-sm font-medium border-b-2 transition-colors flex items-center ${activeTab === 'donate' ? 'border-rose-500 text-white' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+            >
+              Donate Section UI
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      {activeTab === 'donate' ? (
+        <DonateUI />
+      ) : (
+        <div className="pb-20">
+          <main className="max-w-6xl mx-auto px-6 py-12">
         
         {/* Header Section */}
         <header className="mb-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
@@ -313,6 +339,8 @@ export default function App() {
         </div>
 
       </main>
+    </div>
+    )}
     </div>
   );
 }
