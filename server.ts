@@ -12,6 +12,7 @@ import imamGadzhiRoutes from './server/routes/imamGadzhi';
 import serverNodesRoutes from './server/routes/serverNodes';
 import firebaseHealthRoutes from './server/routes/firebaseHealth';
 import securityZoneRoutes from './server/routes/securityZone';
+import geoMapRoutes from './server/routes/geoMap';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
@@ -98,6 +99,7 @@ async function startServer() {
   app.use('/api/server-nodes', serverNodesRoutes);
   app.use('/api/firebase-health', firebaseHealthRoutes);
   app.use('/api/security', securityZoneRoutes);
+  app.use('/api/geo-map', geoMapRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
   app.use('/api', dataRoutes);
