@@ -66,7 +66,7 @@ router.post('/:id/action', async (req: Request, res: Response): Promise<void> =>
 // Coin Management API
 router.post('/:id/coins', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { amount, type } = req.body; 
+    const { amount, type, operatorUid = 'system_admin' } = req.body; 
     const userId = req.params.id;
     const userRef = db.collection('users').doc(userId);
 
@@ -78,13 +78,31 @@ router.post('/:id/coins', async (req: Request, res: Response): Promise<void> => 
 
       const currentCoins = doc.data()?.coins || 0;
       let newCoins = currentCoins;
-      if (type === 'add') newCoins += Number(amount);
-      if (type === 'deduct') newCoins = Math.max(0, currentCoins - Number(amount));
+      let actionType = 'CREDIT';
+      
+      if (type === 'add') {
+        newCoins += Number(amount);
+        actionType = 'CREDIT';
+      }
+      if (type === 'deduct') {
+        newCoins = Math.max(0, currentCoins - Number(amount));
+        actionType = 'REVOKE';
+      }
 
+      // Update user coins
       transaction.update(userRef, { coins: newCoins });
+      
+      // Log economy transaction
+      const logRef = db.collection(`economy_logs`).doc(userId).collection('transactions').doc();
+      transaction.set(logRef, {
+        action: actionType,
+        amount: Number(amount),
+        timestamp: Date.now(),
+        operatorUid: operatorUid
+      });
     });
 
-    res.json({ success: true, message: `Coins updated` });
+    res.json({ success: true, message: `Coins updated and economy logged` });
   } catch (error) {
     res.status(500).json({ error: 'Failed to manage coins' });
   }

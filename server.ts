@@ -17,9 +17,14 @@ import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
 
+import { startRiskProfileJob } from './server/jobs/riskProfileJob';
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Start background jobs
+  startRiskProfileJob();
 
   // 1. Security Middlewares
   app.use(helmet({
