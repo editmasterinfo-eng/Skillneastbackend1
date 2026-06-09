@@ -18,7 +18,8 @@ import {
   Zap,
   Fingerprint,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  MapPin
 } from "lucide-react";
 import {
   LineChart,
@@ -43,6 +44,23 @@ interface SystemMetrics {
   latency: number;
 }
 
+interface GeoUser {
+  name: string;
+  location: {
+    lat: number;
+    lon: number;
+    city: string;
+    country: string;
+  };
+}
+
+interface GeoMapData {
+  status: string;
+  activeVectors: number;
+  globalBandwidth: string;
+  liveUsers: Record<string, GeoUser>;
+}
+
 const MAX_HISTORY = 15; // Keep last 15 points
 
 export default function App() {
@@ -50,6 +68,7 @@ export default function App() {
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
   const [metricsHistory, setMetricsHistory] = useState<SystemMetrics[]>([]);
   const [currentMetrics, setCurrentMetrics] = useState<SystemMetrics | null>(null);
+  const [geoData, setGeoData] = useState<GeoMapData | null>(null);
 
   useEffect(() => {
     // Health check
@@ -73,9 +92,22 @@ export default function App() {
         .catch(console.error);
     };
 
+    // Poll Geo Map Dashboard
+    const fetchGeoData = () => {
+      fetch("/api/geo-map/dashboard")
+        .then(res => res.json())
+        .then(data => setGeoData(data))
+        .catch(console.error);
+    };
+
     fetchMetrics();
+    fetchGeoData();
     const interval = setInterval(fetchMetrics, 3000);
-    return () => clearInterval(interval);
+    const geoInterval = setInterval(fetchGeoData, 10000); // 10s polling as per protocol
+    return () => {
+      clearInterval(interval);
+      clearInterval(geoInterval);
+    };
   }, []);
 
   // Fake static visual data for Storage (Server videos storage vs used)
@@ -311,6 +343,76 @@ export default function App() {
             </div>
 
 
+
+            {/* New Geo Node Map Matrix Block */}
+            <div className="mb-16">
+              <div className="bg-gradient-to-tr from-[#0a0514] to-[#04020a] border border-indigo-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
+                {/* Decorative Map Grid overlay */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+                
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                      <Globe className="w-6 h-6 text-indigo-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Live Geo Node Map
+                        <span className="flex h-2 w-2 relative ml-1">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        </span>
+                      </h3>
+                      <p className="text-xs text-neutral-400 font-mono mt-1">Real-time packet plotting and geographical vector analysis.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-6">
+                    <div className="text-right">
+                       <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mb-1">Active Vectors</p>
+                       <p className="text-2xl font-black text-white leading-none">{geoData ? geoData.activeVectors : '--'}</p>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mb-1">Global Bandwidth</p>
+                       <p className="text-2xl font-black text-indigo-400 leading-none">{geoData ? geoData.globalBandwidth : '--'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Simulated World Map Canvas / Node Vector Map */}
+                <div className="w-full bg-[#030105] rounded-2xl border border-white/5 h-[300px] relative overflow-hidden flex items-center justify-center p-4">
+                  {/* Subtle map imagery / vector dots representation */}
+                  <div className="absolute inset-0 opacity-[0.15] bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain mix-blend-screen px-10"></div>
+                  
+                  {geoData && geoData.liveUsers && Object.entries(geoData.liveUsers).map(([id, user]) => {
+                     // Extremely simplified plotting approach just for modern dashboard visual aesthetics
+                     // Math.abs on Lat/Lon just randomly offset to give cool scatter effect
+                     const topPos = `${50 - (user.location.lat)}%`;
+                     const leftPos = `${50 + (user.location.lon / 2)}%`;
+                     
+                     return (
+                        <div key={id} className="absolute flex flex-col items-center group cursor-crosshair z-10" style={{ top: topPos, left: leftPos }}>
+                          <div className="relative flex items-center justify-center">
+                            <span className="animate-ping absolute h-8 w-8 rounded-full bg-emerald-500 opacity-20"></span>
+                            <MapPin className="w-4 h-4 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                          </div>
+                          
+                          {/* Tooltip on hover */}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-6 bg-black/80 backdrop-blur-md border border-white/10 px-3 py-2 rounded-xl whitespace-nowrap shadow-2xl pointer-events-none transform -translate-x-1/2">
+                            <div className="text-xs font-bold text-white mb-0.5">{user.name}</div>
+                            <div className="text-[10px] text-emerald-400 font-mono tracking-wide">{user.location.city}, {user.location.country}</div>
+                            <div className="text-[9px] text-neutral-500 mt-1">LAT: {user.location.lat} | LON: {user.location.lon}</div>
+                          </div>
+                        </div>
+                     );
+                  })}
+                  
+                  {!geoData && (
+                     <div className="text-sm font-mono tracking-widest text-[#6366f1] animate-pulse">ESTABLISHING SATELLITE UPLINK...</div>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Security Architecture & Compliance Notice Block */}
             <div className="space-y-8 bg-gradient-to-b from-[#150505] to-[#0a0202] -mx-6 px-6 py-16 sm:rounded-[40px] sm:mx-0 border border-red-900/20 relative overflow-hidden shadow-2xl">
