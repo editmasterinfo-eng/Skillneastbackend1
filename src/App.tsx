@@ -18,8 +18,7 @@ import {
   Zap,
   Fingerprint,
   Sparkles,
-  ArrowRight,
-  MapPin
+  ArrowRight
 } from "lucide-react";
 import {
   LineChart,
@@ -44,23 +43,6 @@ interface SystemMetrics {
   latency: number;
 }
 
-interface GeoUser {
-  name: string;
-  location: {
-    lat: number;
-    lon: number;
-    city: string;
-    country: string;
-  };
-}
-
-interface GeoMapData {
-  status: string;
-  activeVectors: number;
-  globalBandwidth: string;
-  liveUsers: Record<string, GeoUser>;
-}
-
 const MAX_HISTORY = 15; // Keep last 15 points
 
 export default function App() {
@@ -68,7 +50,6 @@ export default function App() {
   const [healthStatus, setHealthStatus] = useState<string>("Checking...");
   const [metricsHistory, setMetricsHistory] = useState<SystemMetrics[]>([]);
   const [currentMetrics, setCurrentMetrics] = useState<SystemMetrics | null>(null);
-  const [geoData, setGeoData] = useState<GeoMapData | null>(null);
 
   useEffect(() => {
     // Health check
@@ -92,22 +73,9 @@ export default function App() {
         .catch(console.error);
     };
 
-    // Poll Geo Map Dashboard
-    const fetchGeoData = () => {
-      fetch("/api/geo-map/dashboard")
-        .then(res => res.json())
-        .then(data => setGeoData(data))
-        .catch(console.error);
-    };
-
     fetchMetrics();
-    fetchGeoData();
     const interval = setInterval(fetchMetrics, 3000);
-    const geoInterval = setInterval(fetchGeoData, 10000); // 10s polling as per protocol
-    return () => {
-      clearInterval(interval);
-      clearInterval(geoInterval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   // Fake static visual data for Storage (Server videos storage vs used)
@@ -133,14 +101,14 @@ export default function App() {
       <div className="sticky top-0 z-50 pt-6 px-4 sm:px-6 flex justify-center w-full">
         <div className="bg-black/40 backdrop-blur-2xl border border-white/5 rounded-full px-2 py-1.5 flex items-center gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.8)] relative z-50 transition-all">
           {/* Admin Profile Global Avatar */}
-          <div className="flex items-center gap-2 px-2 mr-2 border-r border-white/10">
+          <div className="flex items-center gap-2 px-2 mr-2 border-r border-white/10 relative group cursor-pointer hover:bg-white/5 transition-all py-1 rounded-full">
             <img 
-              src="https://i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
+              src="https://wsrv.nl/?url=i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
               alt="Void Pablo" 
               referrerPolicy="no-referrer"
-              className="w-8 h-8 rounded-full border border-indigo-500/50 object-cover shadow-[0_0_15px_rgba(99,102,241,0.4)]"
+              className="w-10 h-10 rounded-full border border-neutral-700 object-cover shadow-sm group-hover:border-neutral-500 transition-colors"
             />
-            <span className="text-xs font-bold text-white tracking-widest uppercase hidden sm:block pr-2">Void Pablo</span>
+            <span className="text-[11px] font-bold text-neutral-300 tracking-widest uppercase hidden sm:block pr-2 font-mono group-hover:text-white transition-colors">Void Pablo</span>
           </div>
 
           <button 
@@ -244,43 +212,39 @@ export default function App() {
 
             {/* Live Metrics Quick Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-indigo-500/50 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-lg">
-                <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-transform duration-500 group-hover:scale-110"><Cpu className="w-24 h-24 text-indigo-400" /></div>
-                <div className="p-3 bg-indigo-500/10 rounded-2xl w-max border border-indigo-500/20 mb-4 inline-flex shadow-[0_0_15px_rgba(99,102,241,0.15)] relative z-10"><Cpu className="w-6 h-6 text-indigo-400" /></div>
-                <p className="text-[11px] text-neutral-400 font-bold tracking-widest uppercase relative z-10 mb-1">Compute Load</p>
+              <div className="bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-sm">
+                <div className="p-2.5 bg-indigo-500/10 rounded-2xl w-max mb-4 inline-flex shadow-inner border border-indigo-500/20"><Cpu className="w-5 h-5 text-indigo-400" /></div>
+                <p className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase relative z-10 mb-2">Compute Load</p>
                 <div className="flex items-baseline gap-1 relative z-10">
-                  <p className="text-4xl font-black text-white tracking-tighter drop-shadow-sm">{currentMetrics?.cpu.toFixed(1) || 0}</p>
-                  <span className="text-sm font-bold text-indigo-400">%</span>
+                  <p className="text-3xl font-light text-white tracking-tight">{currentMetrics?.cpu.toFixed(1) || 0}</p>
+                  <span className="text-xs font-bold text-neutral-600">%</span>
                 </div>
               </div>
               
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-emerald-500/50 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-lg">
-                <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-transform duration-500 group-hover:scale-110"><Database className="w-24 h-24 text-emerald-400" /></div>
-                <div className="p-3 bg-emerald-500/10 rounded-2xl w-max border border-emerald-500/20 mb-4 inline-flex shadow-[0_0_15px_rgba(52,211,153,0.15)] relative z-10"><Database className="w-6 h-6 text-emerald-400" /></div>
-                <p className="text-[11px] text-neutral-400 font-bold tracking-widest uppercase relative z-10 mb-1">Heap Allocation</p>
+              <div className="bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-sm">
+                <div className="p-2.5 bg-emerald-500/10 rounded-2xl w-max mb-4 inline-flex shadow-inner border border-emerald-500/20"><Database className="w-5 h-5 text-emerald-400" /></div>
+                <p className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase relative z-10 mb-2">Heap Allocation</p>
                 <div className="flex items-baseline gap-1 relative z-10">
-                  <p className="text-4xl font-black text-white tracking-tighter drop-shadow-sm">{currentMetrics?.memory.toFixed(1) || 0}</p>
-                  <span className="text-sm font-bold text-emerald-400">MB</span>
+                  <p className="text-3xl font-light text-white tracking-tight">{currentMetrics?.memory.toFixed(1) || 0}</p>
+                  <span className="text-xs font-bold text-neutral-600">MB</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-lg">
-                <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-transform duration-500 group-hover:scale-110"><Users className="w-24 h-24 text-amber-400" /></div>
-                <div className="p-3 bg-amber-500/10 rounded-2xl w-max border border-amber-500/20 mb-4 inline-flex shadow-[0_0_15px_rgba(245,158,11,0.15)] relative z-10"><Users className="w-6 h-6 text-amber-400" /></div>
-                <p className="text-[11px] text-neutral-400 font-bold tracking-widest uppercase relative z-10 mb-1">Socket Streams</p>
+              <div className="bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-sm">
+                <div className="p-2.5 bg-amber-500/10 rounded-2xl w-max mb-4 inline-flex shadow-inner border border-amber-500/20"><Users className="w-5 h-5 text-amber-400" /></div>
+                <p className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase relative z-10 mb-2">Socket Streams</p>
                 <div className="flex items-baseline gap-1 relative z-10">
-                  <p className="text-4xl font-black text-white tracking-tighter drop-shadow-sm">{currentMetrics?.activeUsers || 0}</p>
-                  <span className="text-sm font-bold text-amber-400">USR</span>
+                  <p className="text-3xl font-light text-white tracking-tight">{currentMetrics?.activeUsers || 0}</p>
+                  <span className="text-xs font-bold text-neutral-600">USR</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-rose-500/50 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-lg">
-                <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-transform duration-500 group-hover:scale-110"><Activity className="w-24 h-24 text-rose-400" /></div>
-                <div className="p-3 bg-rose-500/10 rounded-2xl w-max border border-rose-500/20 mb-4 inline-flex shadow-[0_0_15px_rgba(244,63,94,0.15)] relative z-10"><Activity className="w-6 h-6 text-rose-400" /></div>
-                <p className="text-[11px] text-neutral-400 font-bold tracking-widest uppercase relative z-10 mb-1">Edge Ping</p>
+              <div className="bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-300 rounded-3xl p-6 relative overflow-hidden group shadow-sm">
+                <div className="p-2.5 bg-rose-500/10 rounded-2xl w-max mb-4 inline-flex shadow-inner border border-rose-500/20"><Activity className="w-5 h-5 text-rose-400" /></div>
+                <p className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase relative z-10 mb-2">Edge Ping</p>
                 <div className="flex items-baseline gap-1 relative z-10">
-                  <p className="text-4xl font-black text-white tracking-tighter drop-shadow-sm">{currentMetrics?.latency || 0}</p>
-                  <span className="text-sm font-bold text-rose-400">MS</span>
+                  <p className="text-3xl font-light text-white tracking-tight">{currentMetrics?.latency || 0}</p>
+                  <span className="text-xs font-bold text-neutral-600">MS</span>
                 </div>
               </div>
             </div>
@@ -371,78 +335,6 @@ export default function App() {
                 </div>
               </div>
 
-            </div>
-
-
-
-            {/* New Geo Node Map Matrix Block */}
-            <div className="mb-16">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden shadow-2xl group hover:border-indigo-500/30 transition-all duration-500">
-                {/* Decorative Map Grid overlay */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-                
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 relative z-10">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)] group-hover:scale-105 transition-transform">
-                      <Globe className="w-6 h-6 text-indigo-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2 drop-shadow-sm">
-                        Live Geo Node Map
-                        <span className="flex h-2 w-2 relative ml-1">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                        </span>
-                      </h3>
-                      <p className="text-xs text-neutral-400 font-mono mt-1 font-medium">Real-time packet plotting and geographical vector analysis.</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                       <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-1">Active Vectors</p>
-                       <p className="text-3xl font-black text-white leading-none drop-shadow-sm">{geoData ? geoData.activeVectors : '--'}</p>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-1">Global Bandwidth</p>
-                       <p className="text-3xl font-black text-indigo-400 leading-none drop-shadow-sm">{geoData ? geoData.globalBandwidth : '--'}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Simulated World Map Canvas / Node Vector Map */}
-                <div className="w-full bg-[#030105]/80 rounded-2xl border border-white/10 h-[300px] relative overflow-hidden flex items-center justify-center p-4 shadow-inner">
-                  {/* Subtle map imagery / vector dots representation */}
-                  <div className="absolute inset-0 opacity-[0.15] bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain mix-blend-screen px-10"></div>
-                  
-                  {geoData && geoData.liveUsers && Object.entries(geoData.liveUsers).map(([id, user]) => {
-                     // Extremely simplified plotting approach just for modern dashboard visual aesthetics
-                     // Math.abs on Lat/Lon just randomly offset to give cool scatter effect
-                     const topPos = `${50 - (user.location.lat)}%`;
-                     const leftPos = `${50 + (user.location.lon / 2)}%`;
-                     
-                     return (
-                        <div key={id} className="absolute flex flex-col items-center group cursor-crosshair z-10" style={{ top: topPos, left: leftPos }}>
-                          <div className="relative flex items-center justify-center">
-                            <span className="animate-ping absolute h-8 w-8 rounded-full bg-emerald-500 opacity-20"></span>
-                            <MapPin className="w-4 h-4 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                          </div>
-                          
-                          {/* Tooltip on hover */}
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-6 bg-black/80 backdrop-blur-md border border-white/10 px-3 py-2 rounded-xl whitespace-nowrap shadow-2xl pointer-events-none transform -translate-x-1/2">
-                            <div className="text-xs font-bold text-white mb-0.5">{user.name}</div>
-                            <div className="text-[10px] text-emerald-400 font-mono tracking-wide">{user.location.city}, {user.location.country}</div>
-                            <div className="text-[9px] text-neutral-500 mt-1">LAT: {user.location.lat} | LON: {user.location.lon}</div>
-                          </div>
-                        </div>
-                     );
-                  })}
-                  
-                  {!geoData && (
-                     <div className="text-sm font-mono tracking-widest text-[#6366f1] animate-pulse">ESTABLISHING SATELLITE UPLINK...</div>
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Security Architecture & Compliance Notice Block */}

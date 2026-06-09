@@ -14,7 +14,7 @@ export default function DonateUI() {
           <div className="relative group">
              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-emerald-500 blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-500 rounded-full"></div>
              <img 
-               src="https://i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
+               src="https://wsrv.nl/?url=i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
                alt="Skill n East Founder" 
                referrerPolicy="no-referrer"
                className="w-24 h-24 rounded-full border border-white/20 shadow-2xl relative z-10 object-cover"
@@ -180,7 +180,7 @@ export default function DonateUI() {
                 <div className="relative group">
                   <div className="absolute inset-0 bg-indigo-500/50 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <img 
-                    src="https://i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
+                    src="https://wsrv.nl/?url=i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
                     alt="Void Pablo" 
                     referrerPolicy="no-referrer"
                     className="w-12 h-12 rounded-full border border-white/20 relative z-10 object-cover"
