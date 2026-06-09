@@ -6,11 +6,7 @@ import {
 
 export default function DonateUI() {
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#000000] text-neutral-200 font-sans p-4 sm:p-8 flex justify-center pb-24 relative overflow-hidden">
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-indigo-600/15 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[400px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"></div>
-
+    <div className="min-h-[calc(100vh-56px)] text-neutral-200 font-sans p-4 sm:p-8 flex justify-center pb-24 relative overflow-hidden z-10 w-full animate-in fade-in duration-700">
       <div className="max-w-4xl w-full space-y-10 relative z-10 mt-8">
         
         {/* Header Section */}
@@ -20,74 +16,87 @@ export default function DonateUI() {
              <img 
                src="https://i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
                alt="Skill n East Founder" 
+               referrerPolicy="no-referrer"
                className="w-24 h-24 rounded-full border border-white/20 shadow-2xl relative z-10 object-cover"
              />
           </div>
           
           <div className="space-y-4 max-w-2xl flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-indigo-300 backdrop-blur-sm shadow-sm">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-indigo-300 backdrop-blur-md shadow-lg shadow-indigo-500/10 tracking-widest uppercase mb-4">
               <Sparkles className="w-4 h-4 text-indigo-400" />
-              <span>Support the Skill n East Mission</span>
+              <span>Skill n East Mission</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-500 tracking-tight leading-tight">
-              Empower the next <br/> generation of builders.
+            <h1 className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40 tracking-tight leading-[1.1] pb-2 drop-shadow-sm">
+              Empower the <br/> next generation.
             </h1>
             
-            <p className="text-neutral-400 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
-              We are breaking down the financial walls of the tech industry. Skill n East provides elite curriculum, tools, and mentorship — <strong className="text-white">completely free</strong>. Your support keeps our servers running and education accessible.
+            <p className="text-neutral-400 text-base md:text-lg leading-relaxed max-w-xl mx-auto font-medium mt-4">
+              We are breaking down the financial walls of the tech industry. Skill n East provides elite curriculum, tools, and mentorship — <strong className="text-emerald-400">completely free</strong>.
             </p>
           </div>
         </div>
 
         {/* Action Blocks (Donation Buttons) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto w-full">
-          <button className="group relative w-full rounded-2xl bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20 hover:border-indigo-500/50 p-6 text-left transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-            <div className="flex justify-between items-center mb-2 relative z-10">
-              <div className="p-2.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300">
-                <CreditCard className="w-6 h-6" />
-              </div>
-              <ArrowRight className="w-5 h-5 text-indigo-500/50 group-hover:text-indigo-400 transition-colors group-hover:translate-x-1" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto w-full">
+          <button className="group relative w-full rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-indigo-500/50 p-6 sm:p-8 text-left transition-all duration-300 hover:shadow-[0_0_40px_rgba(99,102,241,0.15)] hover:bg-white/[0.07] overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700">
+              <CreditCard className="w-32 h-32 text-indigo-400" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1 relative z-10">Direct Contribution / UPI</h3>
-            <p className="text-xs text-neutral-400 font-medium relative z-10">Support transparently via secure gateway.</p>
+            <div className="flex justify-between items-center mb-6 relative z-10">
+              <div className="p-3.5 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                <CreditCard className="w-7 h-7" />
+              </div>
+              <ArrowRight className="w-6 h-6 text-indigo-500/50 group-hover:text-indigo-400 transition-colors group-hover:translate-x-2" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 relative z-10 tracking-tight">Direct Contribution</h3>
+            <p className="text-sm text-neutral-400 font-medium relative z-10 leading-relaxed max-w-[85%]">Support development and server bandwidth directly using secure UPI or card gateways.</p>
           </button>
           
-          <button className="group relative w-full rounded-2xl bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/20 hover:border-emerald-500/50 p-6 text-left transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/10 overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-             <div className="flex justify-between items-center mb-2 relative z-10">
-              <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">
-                <QrCode className="w-6 h-6" />
+          <button className="group relative w-full rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-emerald-500/50 p-6 sm:p-8 text-left transition-all duration-300 hover:shadow-[0_0_40px_rgba(52,211,153,0.15)] hover:bg-white/[0.07] overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-700">
+               <QrCode className="w-32 h-32 text-emerald-400" />
+             </div>
+             <div className="flex justify-between items-center mb-6 relative z-10">
+              <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 shadow-[0_0_15px_rgba(52,211,153,0.2)]">
+                <QrCode className="w-7 h-7" />
               </div>
-              <ArrowRight className="w-5 h-5 text-emerald-500/50 group-hover:text-emerald-400 transition-colors group-hover:translate-x-1" />
+              <ArrowRight className="w-6 h-6 text-emerald-500/50 group-hover:text-emerald-400 transition-colors group-hover:translate-x-2" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1 relative z-10">Crypto & Anonymous QR</h3>
-            <p className="text-xs text-neutral-400 font-medium relative z-10">Privacy-first funding and decentralized support.</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 relative z-10 tracking-tight">Crypto & Anonymous</h3>
+            <p className="text-sm text-neutral-400 font-medium relative z-10 leading-relaxed max-w-[85%]">Privacy-first funding via decentralized smart contracts or direct QR code scans.</p>
           </button>
         </div>
 
         {/* Global Impact Grid (Bento) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 duration-500"><Users className="w-16 h-16" /></div>
-            <div className="text-3xl lg:text-4xl font-black text-white tracking-tighter mb-1 relative z-10">5000K+</div>
-            <div className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider relative z-10">Global Learners</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-indigo-500/30 transition-all shadow-lg">
+            <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:scale-110"><Users className="w-32 h-32" /></div>
+            <div className="text-4xl lg:text-5xl font-black text-white tracking-tighter mb-2 relative z-10 drop-shadow-sm">5000+</div>
+            <div className="text-xs text-neutral-400 font-bold uppercase tracking-widest relative z-10 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500"></span> Global Learners
+            </div>
           </div>
-          <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
-             <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 duration-500"><Lock className="w-16 h-16" /></div>
-            <div className="text-3xl lg:text-4xl font-black text-indigo-400 tracking-tighter mb-1 relative z-10">100%</div>
-            <div className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider relative z-10">Open Source</div>
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-blue-500/30 transition-all shadow-lg">
+             <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:scale-110"><Lock className="w-32 h-32" /></div>
+            <div className="text-4xl lg:text-5xl font-black text-blue-400 tracking-tighter mb-2 relative z-10 drop-shadow-sm">100%</div>
+            <div className="text-xs text-neutral-400 font-bold uppercase tracking-widest relative z-10 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-blue-500"></span> Open Source
+            </div>
           </div>
-          <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 duration-500"><Activity className="w-16 h-16" /></div>
-            <div className="text-3xl lg:text-4xl font-black text-emerald-400 tracking-tighter mb-1 relative z-10">₹0</div>
-            <div className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider relative z-10">Cost to User</div>
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-emerald-500/30 transition-all shadow-lg">
+            <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:scale-110"><Activity className="w-32 h-32" /></div>
+            <div className="text-4xl lg:text-5xl font-black text-emerald-400 tracking-tighter mb-2 relative z-10 drop-shadow-sm">₹0</div>
+            <div className="text-xs text-neutral-400 font-bold uppercase tracking-widest relative z-10 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Cost to User
+            </div>
           </div>
-          <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
-             <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 duration-500"><Code className="w-16 h-16" /></div>
-            <div className="text-3xl lg:text-4xl font-black text-white tracking-tighter mb-1 relative z-10">150+</div>
-            <div className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider relative z-10">Tech Modules</div>
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-rose-500/30 transition-all shadow-lg">
+             <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:scale-110"><Code className="w-32 h-32" /></div>
+            <div className="text-4xl lg:text-5xl font-black text-white tracking-tighter mb-2 relative z-10 drop-shadow-sm">150+</div>
+            <div className="text-xs text-neutral-400 font-bold uppercase tracking-widest relative z-10 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-rose-500"></span> Tech Modules
+            </div>
           </div>
         </div>
 
@@ -173,6 +182,7 @@ export default function DonateUI() {
                   <img 
                     src="https://i.postimg.cc/hPhF7CyJ/file-00000000c5547208bf8ac5280a6e09e9.png" 
                     alt="Void Pablo" 
+                    referrerPolicy="no-referrer"
                     className="w-12 h-12 rounded-full border border-white/20 relative z-10 object-cover"
                   />
                 </div>
