@@ -20,6 +20,8 @@ import syncRoutes from './server/routes/sync';
 import nodesRoutes from './server/routes/nodes';
 import botRoutes from './server/routes/bot';
 import elearningRoutes from './server/routes/elearning';
+import lmsRoutes from './server/routes/lms';
+import accessRoutes from './server/routes/access';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
@@ -119,6 +121,8 @@ async function startServer() {
   app.use('/api/nodes', nodesRoutes);
   app.use('/api/bot', botRoutes);
   app.use('/api/learn', elearningRoutes);
+  app.use('/api/lms', lmsRoutes);
+  app.use('/api/access', accessRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
   app.use('/api', dataRoutes);
