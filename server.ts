@@ -22,6 +22,7 @@ import botRoutes from './server/routes/bot';
 import elearningRoutes from './server/routes/elearning';
 import lmsRoutes from './server/routes/lms';
 import accessRoutes from './server/routes/access';
+import notificationsRoutes from './server/routes/notifications';
 import { userRoutes } from './src/server/routes/user.routes';
 import { streamRoutes } from './src/server/routes/stream.routes';
 import { dataRoutes } from './src/server/routes/data.routes';
@@ -123,6 +124,7 @@ async function startServer() {
   app.use('/api/learn', elearningRoutes);
   app.use('/api/lms', lmsRoutes);
   app.use('/api/access', accessRoutes);
+  app.use('/api/notifications', notificationsRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/stream', streamRoutes);
   app.use('/api', dataRoutes);
