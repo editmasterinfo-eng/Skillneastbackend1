@@ -16,10 +16,11 @@ router.post('/request/:videoId', requireAuth, monitorDeviceLimits, streamLimiter
     if (proxyUrl) {
       res.json({ proxyUrl });
     } else {
-      res.status(404).json({ error: 'Stream not found or could not be resolved' });
+      res.status(404).json({ error: true, code: 404, message: 'Stream not found or could not be resolved' });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Failed to request stream' });
+    console.error('Stream request error:', err);
+    res.status(500).json({ error: true, code: 500, message: 'Failed to request stream' });
   }
 });
 
@@ -33,7 +34,7 @@ router.get('/proxy/:proxyId', requireAuth, streamLimiter, async (req: Request, r
   try {
     const originalUrl = TelegramService.resolveProxyId(proxyId, uid);
     if (!originalUrl) {
-      res.status(403).json({ error: 'Invalid or expired stream session' });
+      res.status(403).json({ error: true, code: 403, message: 'Invalid or expired stream session' });
       return;
     }
 
@@ -45,7 +46,8 @@ router.get('/proxy/:proxyId', requireAuth, streamLimiter, async (req: Request, r
     // For demonstration, we'll pipe a mock response or just redirect (redirect defeats the proxy purpose but works as placeholder)
     res.json({ message: 'Piping stream...', internalResolvedUrl: originalUrl });
   } catch (err) {
-    res.status(500).json({ error: 'Stream playback failed' });
+    console.error('Stream proxy error:', err);
+    res.status(500).json({ error: true, code: 500, message: 'Stream playback failed' });
   }
 });
 

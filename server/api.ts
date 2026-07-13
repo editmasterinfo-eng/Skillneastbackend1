@@ -87,7 +87,7 @@ router.post('/update-role', async (req: Request, res: Response): Promise<void> =
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ error: 'Missing or invalid authorization header' });
+      res.status(401).json({ error: true, code: 401, message: 'Missing or invalid authorization header' });
       return;
     }
     const idToken = authHeader.split('Bearer ')[1];
@@ -99,9 +99,9 @@ router.post('/update-role', async (req: Request, res: Response): Promise<void> =
         throw new Error('Forbidden: Insufficient privileges.');
       }
     } catch (firebaseErr: any) {
-      // FALLBACK for demo purposes if the frontend sends the dummy token 'admin123'
-      if (idToken !== 'admin123' && idToken !== process.env.ADMIN_SECRET) {
-        res.status(403).json({ error: 'Forbidden: Insufficient privileges or invalid token.' });
+      // FALLBACK: strict admin token check
+      if (!process.env.ADMIN_SECRET || idToken !== process.env.ADMIN_SECRET) {
+        res.status(403).json({ error: true, code: 403, message: 'Forbidden: Insufficient privileges or invalid token.' });
         return;
       }
       decodedToken = { uid: 'system_admin', admin: true };
@@ -109,7 +109,7 @@ router.post('/update-role', async (req: Request, res: Response): Promise<void> =
 
     const { targetUid, newRole } = req.body;
     if (!targetUid || !newRole) {
-      res.status(400).json({ error: 'Missing targetUid or newRole payload' });
+      res.status(400).json({ error: true, code: 400, message: 'Missing targetUid or newRole payload' });
       return;
     }
 
@@ -135,7 +135,7 @@ router.post('/update-role', async (req: Request, res: Response): Promise<void> =
     res.json({ success: true, message: `Successfully escalated ${targetUid} to ${newRole}` });
   } catch (error: any) {
     console.error('Role update error:', error);
-    res.status(500).json({ error: 'Failed to update role' });
+    res.status(500).json({ error: true, code: 500, message: 'Failed to update role' });
   }
 });
 

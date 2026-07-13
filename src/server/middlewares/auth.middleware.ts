@@ -14,7 +14,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ error: 'Unauthorized: No token provided' });
+      res.status(401).json({ error: true, code: 401, message: 'Unauthorized: No token provided' });
       return;
     }
 
@@ -38,15 +38,15 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
           return;
         } catch (jwtError) {
           // Both failed
-          res.status(401).json({ error: 'Unauthorized: Invalid token' });
+          res.status(401).json({ error: true, code: 401, message: 'Unauthorized: Invalid token' });
           return;
         }
       } else {
-        res.status(401).json({ error: 'Unauthorized: Invalid token' });
+        res.status(401).json({ error: true, code: 401, message: 'Unauthorized: Invalid token' });
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error in Authentication' });
+    res.status(500).json({ error: true, code: 500, message: 'Internal Server Error in Authentication' });
   }
 };
 
@@ -55,8 +55,8 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      const staticAdminToken = process.env.ADMIN_TOKEN || 'admin123';
-      if (token === staticAdminToken) {
+      const adminSecret = process.env.ADMIN_SECRET;
+      if (adminSecret && token === adminSecret) {
         req.user = { admin: true, uid: 'static-admin' };
         req.uid = 'static-admin';
         next();
@@ -83,10 +83,10 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
         }
       }
       
-      res.status(403).json({ error: 'Forbidden: Admin access required' });
+      res.status(403).json({ error: true, code: 403, message: 'Forbidden: Admin access required' });
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: true, code: 500, message: 'Internal Server Error' });
   }
 };
 

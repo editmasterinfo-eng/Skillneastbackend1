@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../middlewares/auth.middleware';
 import { db, admin } from '../firebase';
 
+import { authLimiter } from '../middlewares/rateLimit.middleware';
+
 const router = Router();
 
 router.use(requireAuth);
@@ -11,7 +13,7 @@ router.get('/profile', async (req: Request, res: Response): Promise<void> => {
   try {
     const userDoc = await db.collection('users').doc(req.uid!).get();
     if (!userDoc.exists) {
-      res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: true, code: 404, message: 'User not found' });
       return;
     }
     const data = userDoc.data();
@@ -21,15 +23,16 @@ router.get('/profile', async (req: Request, res: Response): Promise<void> => {
     }
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    console.error('Profile fetch error:', err);
+    res.status(500).json({ error: true, code: 500, message: 'Failed to fetch profile' });
   }
 });
 
 // Validate & Consume License Key
-router.post('/activate-key', async (req: Request, res: Response): Promise<void> => {
+router.post('/activate-key', authLimiter, async (req: Request, res: Response): Promise<void> => {
   const { key } = req.body;
   if (!key) {
-    res.status(400).json({ error: 'License key is required' });
+    res.status(400).json({ error: true, code: 400, message: 'License key is required' });
     return;
   }
 
@@ -67,9 +70,10 @@ router.post('/activate-key', async (req: Request, res: Response): Promise<void> 
         return 'success';
     });
     
-    res.json({ message: 'License key activated successfully', status: result });
+    res.json({ success: true, message: 'License key activated successfully', status: result });
   } catch (err: any) {
-    res.status(400).json({ error: err.message || 'Key validation failed' });
+    console.error('Key activation error:', err);
+    res.status(400).json({ error: true, code: 400, message: err.message || 'Key validation failed' });
   }
 });
 
@@ -91,8 +95,7 @@ router.post('/progress', async (req: Request, res: Response): Promise<void> => {
                  // Assuming max 5 mins jump between ping
                  console.warn(`Suspicious progress jump by user ${req.uid}`);
                  // Cap the jump or reject entirely
-                 res.status(400).json({ error: 'Invalid progress tracked detected cheating' });
-                 return;
+                 throw new Error('Invalid progress tracked detected cheating');
              }
              
              t.set(progressRef, {
@@ -101,9 +104,14 @@ router.post('/progress', async (req: Request, res: Response): Promise<void> => {
              }, { merge: true });
         });
         
-        res.json({ message: 'Progress updated' });
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to update progress' });
+        res.json({ success: true, message: 'Progress updated' });
+    } catch (err: any) {
+        if (err.message === 'Invalid progress tracked detected cheating') {
+            res.status(400).json({ error: true, code: 400, message: err.message });
+        } else {
+            console.error('Progress update error:', err);
+            res.status(500).json({ error: true, code: 500, message: 'Failed to update progress' });
+        }
     }
 });
 

@@ -40,10 +40,10 @@ export class TelegramService {
       // 3. Create a temporary, secure UUID for proxy mapping
       const proxyId = uuidv4();
       
-      // Expires in 3 hours
+      // Expires in 10 minutes
       streamMap.set(proxyId, {
         originalUrl: resolvedDirectUrl,
-        expiresAt: Date.now() + 3 * 60 * 60 * 1000,
+        expiresAt: Date.now() + 10 * 60 * 1000,
         userId
       });
       

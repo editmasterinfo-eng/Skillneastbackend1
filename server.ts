@@ -46,14 +46,15 @@ async function startServer() {
   // Disable direct external access from unknown domains
   const allowedOrigins = [
       process.env.APP_URL, 
+      process.env.ALLOWED_ORIGIN,
       'http://localhost:3000',
       'http://localhost:5173'
   ].filter(Boolean) as string[];
 
   app.use(cors({
     origin: (origin, callback) => {
-      // ONLY ALLOW skillneast.vercel.app, local dev, and AI Studio
-      if (!origin || allowedOrigins.includes(origin) || origin === 'https://skillneast.vercel.app' || origin.includes('run.app')) {
+      // ONLY ALLOW local dev, and AI Studio
+      if (!origin || allowedOrigins.includes(origin) || origin.includes('run.app')) {
         callback(null, true);
       } else {
         callback(new Error('Blocked by Strict CORS Policy: Unauthorized origin'));
@@ -63,7 +64,7 @@ async function startServer() {
   }));
 
   // JSON parsing and Rate Limiting
-  app.use(express.json());
+  app.use(express.json({ limit: '1mb' }));
   app.use(globalLimiter);
 
   // 2. API Routes
